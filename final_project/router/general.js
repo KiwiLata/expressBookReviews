@@ -3,7 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-const axios = require('axios').default;
+const axios = require('axios');
 
 
 public_users.post("/register", (req,res) => {
@@ -36,6 +36,19 @@ public_users.get('/',function (req, res) {
     (book) => res.send(JSON.stringify(book, null, 3)),
     (error) => res.send("Coudln't retrieve books.")
   );
+});
+
+// Get the book list available in the shop using axios
+
+public_users.get('/axios-books', async (req, res) => {
+    try {
+        const response = await axios.get('https://an12-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/');
+        const booksAxios= response.data;
+
+        res.send(JSON.stringify(booksAxios, null, 3));
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch books using Axios" });
+    }
 });
 
 // Get book details based on ISBN
@@ -109,7 +122,7 @@ public_users.get('/title/:title',function (req, res) {
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  let isbn = req.params.isbn;Molloy, Malone Dies, The Unnamable, the trilogy
+  let isbn = req.params.isbn;
   let book = books[isbn];
   res.send(JSON.stringify(book.reviews, null , 3));
 });
