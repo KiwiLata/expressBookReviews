@@ -64,8 +64,19 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         return res.status(404).json({ message: "Unable to add review." });
     }
 
-
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    let isbn = req.params.isbn;
+    let username = req.session.req.session.authorization["username"];
+
+    if(isValid(username)) {
+        delete books[isbn].reviews[username];
+        return res.status(200).json({ message: "Review deleted." });
+    } else {
+        return res.status(404).json({ message: "Unable to delete review." });
+    }
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
