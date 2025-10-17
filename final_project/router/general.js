@@ -40,50 +40,76 @@ public_users.get('/',function (req, res) {
 
 // Get book details based on ISBN
 
-public_users.get('/isbn/:isbn', async function (req, res) {
-    let isbn = req.params.isbn;
-    let bookData = await axios.get(`https://an12-5000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/isbn/${isbn}`);
-    let book = bookData.data;
-    res.send(JSON.stringify(book, null , 3));
-   });
+let getBooksByISBN = (isbn) => {
+    let retrievedBooks = new Promise((resolve, reject) => {
+        resolve(books[isbn]);
+    });
+    return retrievedBooks;
+}
 
-/*
 public_users.get('/isbn/:isbn',function (req, res) {
   let isbn = req.params.isbn;
-  let book = books[isbn];
-  res.send(JSON.stringify(book, null , 3));
+  getBooksByISBN(isbn).then(
+    (book) => res.send(JSON.stringify(book, null , 3)),
+    (error) => res.send("Coudln't retrieve books.")
+  );
  });
- */
+
   
 // Get book details based on author
+
+let getBooksByAuthor = (author) => {
+    let book;
+    let book_isbn;
+
+    for(let isbn in books) {
+        if(books[isbn].author === author) {
+            book_isbn = isbn;
+        }
+    }
+    
+    let retrievedBooks = new Promise((resolve, reject) => {
+        resolve(books[book_isbn]);
+    });
+    return retrievedBooks;
+}
+
 public_users.get('/author/:author',function (req, res) {
   let author = req.params.author;
-  let book;
-
-  for(let isbn in books) {
-    if(books[isbn].author === author) {
-        book = books[isbn];
-    }
-  }
-  res.send(JSON.stringify(book, null , 3));
+  getBooksByAuthor(author).then(
+    (book) => res.send(JSON.stringify(book, null , 3)),
+    (error) => res.send("Coudln't retrieve books.")
+  );
 });
 
 // Get all books based on title
+
+let getBooksByTitle = (title) => {
+    let book_isbn;
+
+    for(let isbn in books) {
+        if(books[isbn].title === title) {
+            book_isbn = isbn;
+        }
+    }
+    
+    let retrievedBooks = new Promise((resolve, reject) => {
+        resolve(books[book_isbn]);
+    });
+    return retrievedBooks;
+}
+
 public_users.get('/title/:title',function (req, res) {
     let title = req.params.title;
-    let book;
-  
-    for(let isbn in books) {
-      if(books[isbn].title === title) {
-          book = books[isbn];
-      }
-    }
-    res.send(JSON.stringify(book, null , 3));
+    getBooksByTitle(title).then(
+        (book) => res.send(JSON.stringify(book, null , 3)),
+        (error) => res.send("Coudln't retrieve books.")
+      );
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  let isbn = req.params.isbn;
+  let isbn = req.params.isbn;Molloy, Malone Dies, The Unnamable, the trilogy
   let book = books[isbn];
   res.send(JSON.stringify(book.reviews, null , 3));
 });
